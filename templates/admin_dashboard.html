@@ -1,0 +1,293 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="admin-dashboard">
+
+    <!-- PAGE HEADER -->
+
+    <div class="dashboard-header">
+
+        <div>
+            <h1>Admin Dashboard</h1>
+
+            <p>
+                Manage election settings, candidates and results
+            </p>
+        </div>
+
+    </div>
+
+    <!-- STATS SECTION -->
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+
+            <h3>Total Candidates</h3>
+
+            <h1>
+                {{ candidates|length }}
+            </h1>
+
+        </div>
+
+        <div class="stat-card">
+
+            <h3>Election Status</h3>
+
+            <h2>
+                Upcoming
+            </h2>
+
+        </div>
+
+        <div class="stat-card">
+
+            <h3>Results</h3>
+
+            <h2>
+                Hidden
+            </h2>
+
+        </div>
+
+    </div>
+
+    <!-- TOP SECTION -->
+
+    <div class="top-section">
+
+        <!-- ELECTION SETTINGS -->
+
+        <div class="dashboard-card">
+
+            <h2>
+                Election Settings
+            </h2>
+
+            <form method="POST"
+                  action="/update-election">
+
+                <div class="form-group">
+
+                    <label>
+                        Election Name
+                    </label>
+
+                    <input type="text"
+                           name="election_name"
+                           placeholder="Enter Election Name"
+                           required>
+
+                </div>
+
+                <div class="date-grid">
+
+                    <div class="form-group">
+
+                        <label>
+                            Start Time
+                        </label>
+
+                        <input type="datetime-local"
+                               name="start_time"
+                               required>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>
+                            End Time
+                        </label>
+
+                        <input type="datetime-local"
+                               name="end_time"
+                               required>
+
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>
+                        Result Publish Time
+                    </label>
+
+                    <input type="datetime-local"
+                           name="result_time"
+                           required>
+
+                </div>
+
+                <button type="submit"
+                        class="primary-btn">
+
+                    Update Election
+
+                </button>
+
+            </form>
+
+        </div>
+
+        <!-- ADD CANDIDATE -->
+
+        <div class="dashboard-card">
+
+            <h2>
+                Add Candidate
+            </h2>
+
+            <form method="POST"
+                  action="/add-candidate">
+
+                <div class="form-group">
+
+                    <label>
+                        Candidate Name
+                    </label>
+
+                    <input type="text"
+                           name="name"
+                           placeholder="Enter Candidate Name"
+                           required>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>
+                        Party Name
+                    </label>
+
+                    <input type="text"
+                           name="party"
+                           placeholder="Enter Party Name"
+                           required>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>
+                        Candidate Slogan
+                    </label>
+
+                    <input type="text"
+                           name="slogan"
+                           placeholder="Enter Candidate Slogan"
+                           required>
+
+                </div>
+
+                <button type="submit"
+                        class="success-btn">
+
+                    Add Candidate
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <!-- CANDIDATES SECTION -->
+
+    <div class="dashboard-card">
+
+        <div class="section-header">
+
+            <h2>
+                All Candidates
+            </h2>
+
+        </div>
+
+        {% if candidates %}
+
+            <div class="candidate-grid">
+
+                {% for candidate in candidates %}
+
+                    <div class="candidate-box">
+
+                        <div class="candidate-top">
+
+                            <h3>
+                                {{ candidate.name }}
+                            </h3>
+
+                            <span class="vote-badge">
+
+                                {{ candidate.votes }} Votes
+
+                            </span>
+
+                        </div>
+
+                        <p>
+
+                            <strong>Party:</strong>
+                            {{ candidate.party }}
+
+                        </p>
+
+                        <p class="slogan">
+
+                            "{{ candidate.slogan }}"
+
+                        </p>
+
+                        <a href="/delete-candidate/{{ candidate.id }}"
+                           class="delete-btn">
+
+                           Delete Candidate
+
+                        </a>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-box">
+
+                No candidates available yet.
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+    <!-- ACTION BUTTONS -->
+
+    <div class="dashboard-actions">
+
+        <a href="/results"
+           class="primary-btn action-btn">
+
+           View Admin Results
+
+        </a>
+
+        <a href="/public-results"
+           class="secondary-btn action-btn">
+
+           Public Results
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

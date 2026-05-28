@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="creative-home">
+
+    <!-- HERO SECTION -->
+
+    <section class="hero-container">
+
+        <div class="hero-left">
+
+            <span class="top-badge">
+
+                🗳 Secure Digital Election Platform
+
+            </span>
+
+            <h1>
+
+                Vote Smarter.
+                <br>
+                Elect Better.
+
+            </h1>
+
+            <p>
+
+                A modern online voting platform built for
+                secure, transparent and efficient elections
+                with real-time management and result tracking.
+
+            </p>
+
+            <div class="hero-buttons">
+
+                <a href="/register"
+                   class="main-btn">
+
+                   Get Started
+
+                </a>
+
+                <a href="/public-results"
+                   class="outline-btn">
+
+                   View Results
+
+                </a>
+
+            </div>
+
+        </div>
+
+        <!-- RIGHT SIDE -->
+
+        <div class="hero-right">
+
+            <div class="glass-card">
+
+                <h3>
+                    Election Status
+                </h3>
+
+                <h2>
+                    {{ status_message }}
+                </h2>
+
+                {% if countdown_time %}
+
+                <div class="countdown-area">
+
+                    <div id="countdown"></div>
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- STATS -->
+
+    <section class="stats-section">
+
+        <div class="mini-card">
+
+            <h1>
+                🔒
+            </h1>
+
+            <h2>
+                Secure
+            </h2>
+
+            <p>
+                Protected voting system
+            </p>
+
+        </div>
+
+        <div class="mini-card">
+
+            <h1>
+                ⚡
+            </h1>
+
+            <h2>
+                Fast
+            </h2>
+
+            <p>
+                Real-time vote management
+            </p>
+
+        </div>
+
+        <div class="mini-card">
+
+            <h1>
+                📊
+            </h1>
+
+            <h2>
+                Transparent
+            </h2>
+
+            <p>
+                Fair election process
+            </p>
+
+        </div>
+
+        <div class="mini-card">
+
+            <h1>
+                🌐
+            </h1>
+
+            <h2>
+                Responsive
+            </h2>
+
+            <p>
+                Mobile-friendly experience
+            </p>
+
+        </div>
+
+    </section>
+
+</div>
+
+<!-- COUNTDOWN -->
+
+<script>
+
+const targetDate =
+    new Date(
+        "{{ countdown_time }}"
+    ).getTime();
+
+const countdown =
+    document.getElementById(
+        "countdown"
+    );
+
+if(countdown){
+
+    const timer =
+        setInterval(function(){
+
+        const now =
+            new Date().getTime();
+
+        const distance =
+            targetDate - now;
+
+        const days =
+            Math.floor(distance /
+            (1000 * 60 * 60 * 24));
+
+        const hours =
+            Math.floor(
+            (distance %
+            (1000 * 60 * 60 * 24)) /
+            (1000 * 60 * 60));
+
+        const minutes =
+            Math.floor(
+            (distance %
+            (1000 * 60 * 60)) /
+            (1000 * 60));
+
+        const seconds =
+            Math.floor(
+            (distance %
+            (1000 * 60)) / 1000);
+
+        countdown.innerHTML =
+
+            days + "d " +
+            hours + "h " +
+            minutes + "m " +
+            seconds + "s ";
+
+        if(distance < 0){
+
+            clearInterval(timer);
+
+            location.reload();
+
+        }
+
+    }, 1000);
+
+}
+
+</script>
+
+{% endblock %}

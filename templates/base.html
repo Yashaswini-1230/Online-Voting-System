@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>
+        Online Voting System
+    </title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet"
+      href="{{ url_for('static',
+      filename='style.css',
+      v=2) }}">
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<nav class="navbar">
+
+    <div class="logo">
+        Online Voting System
+    </div>
+
+    <div class="nav-links">
+
+        <a href="/">Home</a>
+
+        <a href="/vote">Vote</a>
+
+        <a href="/public-results">Results</a>
+
+        <a href="/admin-login">Admin</a>
+
+        <a href="/logout">Logout</a>
+
+    </div>
+
+</nav>
+
+<!-- FLASH MESSAGES -->
+
+<div class="flash-container">
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+
+            <div class="flash {{ category }}">
+
+                {{ message }}
+
+            </div>
+
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+</div>
+
+<!-- PAGE CONTENT -->
+
+{% block content %}
+
+{% endblock %}
+
+<!-- FOOTER -->
+
+<footer class="footer">
+
+    <p>
+        © 2026 Online Voting System
+    </p>
+
+    <p>
+        Built using Flask & MySQL
+    </p>
+
+</footer>
+
+</body>
+</html>

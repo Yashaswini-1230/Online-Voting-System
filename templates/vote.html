@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="vote-page">
+
+    <!-- HEADER -->
+
+    <div class="vote-header">
+
+        <h1>
+            Cast Your Vote
+        </h1>
+
+        <p>
+
+            {{ election.election_name }}
+
+        </p>
+
+    </div>
+
+    <!-- NO CANDIDATES -->
+
+    {% if not candidates %}
+
+    <div class="empty-results">
+
+        <h2>
+            No Candidates Available
+        </h2>
+
+        <p>
+            Candidates will be announced soon.
+        </p>
+
+    </div>
+
+    {% else %}
+
+    <!-- VOTING FORM -->
+
+    <form method="POST"
+          class="vote-form">
+
+        <div class="vote-grid">
+
+            {% for candidate in candidates %}
+
+            <label class="vote-card">
+
+                <input type="radio"
+                       name="candidate"
+                       value="{{ candidate.id }}"
+                       required>
+
+                <div class="vote-card-content">
+
+                    <div class="candidate-avatar">
+
+                        {{ candidate.name[0] }}
+
+                    </div>
+
+                    <h2>
+                        {{ candidate.name }}
+                    </h2>
+
+                    <p class="party-name">
+
+                        {{ candidate.party }}
+
+                    </p>
+
+                    <p class="candidate-slogan">
+
+                        "{{ candidate.slogan }}"
+
+                    </p>
+
+                </div>
+
+            </label>
+
+            {% endfor %}
+
+        </div>
+
+        <div class="submit-section">
+
+            <button type="submit"
+                    class="vote-submit-btn">
+
+                Submit Vote
+
+            </button>
+
+        </div>
+
+    </form>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
