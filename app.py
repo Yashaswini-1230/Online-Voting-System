@@ -635,23 +635,53 @@ def update_election():
 
         return redirect('/admin-dashboard')
 
-    query = """
-    UPDATE election_settings
-    SET
-    election_name = %s,
-    start_time = %s,
-    end_time = %s,
-    result_time = %s,
-    status = 'upcoming'
-    WHERE id = 1
-    """
+    cursor.execute(
+    "SELECT * FROM election_settings LIMIT 1"
+)
 
-    values = (
-        election_name,
-        start_time,
-        end_time,
-        result_time
-    )
+    existing_election = cursor.fetchone()
+
+    if existing_election:
+
+        query = """
+        UPDATE election_settings
+        SET
+        election_name = %s,
+        start_time = %s,
+        end_time = %s,
+        result_time = %s,
+        status = 'upcoming'
+        WHERE id = %s
+        """
+
+        values = (
+            election_name,
+            start_time,
+            end_time,
+            result_time,
+            existing_election['id']
+        )
+
+    else:
+
+        query = """
+        INSERT INTO election_settings
+        (
+            election_name,
+            start_time,
+            end_time,
+            result_time,
+            status
+        )
+        VALUES (%s, %s, %s, %s, 'upcoming')
+        """
+
+        values = (
+            election_name,
+            start_time,
+            end_time,
+            result_time
+        )
 
     cursor.execute(query, values)
 
