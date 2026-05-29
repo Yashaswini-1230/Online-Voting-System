@@ -15,7 +15,7 @@ app.secret_key = "secretkey"
 db = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="Teja@sql_2-2",
+    password="YOUR_MYSQL_PASSWORD"
     database="voting_system"
 )
 
