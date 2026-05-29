@@ -209,12 +209,12 @@ if(countdown){
 
         if(distance < 0){
 
-            clearInterval(timer);
+    clearInterval(timer);
 
-            location.reload();
+    countdown.innerHTML =
+        "Election status updated. Please refresh.";
 
-        }
-
+}
     }, 1000);
 
 }

@@ -155,8 +155,14 @@
 
 <script>
 
+{% if not no_election %}
+
 setTimeout(function () {
     location.reload();
 }, 60000);
 
+{% endif %}
+
 </script>
+
+{% endblock %}
