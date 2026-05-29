@@ -12,7 +12,24 @@ app.secret_key = "secretkey"
 
 # MYSQL CONNECTION
 import os
+# if os.getenv("MYSQLHOST"):
 
+#     db = mysql.connector.connect(
+#         host=os.getenv("MYSQLHOST"),
+#         user=os.getenv("MYSQLUSER"),
+#         password=os.getenv("MYSQLPASSWORD"),
+#         database=os.getenv("MYSQLDATABASE"),
+#         port=int(os.getenv("MYSQLPORT"))
+#     )
+
+# else:
+
+#     db = mysql.connector.connect(
+#         host="localhost",
+#         user="root",
+#         password="YOUR_LOCAL_MYSQL_PASSWORD",
+#         database="voting_system"
+#     )
 db = mysql.connector.connect(
     host=os.getenv("MYSQLHOST"),
     user=os.getenv("MYSQLUSER"),
@@ -20,12 +37,6 @@ db = mysql.connector.connect(
     database=os.getenv("MYSQLDATABASE"),
     port=int(os.getenv("MYSQLPORT"))
 )
-# db = mysql.connector.connect(
-#     host="localhost",
-#     user="root",
-#     password="Teja@sql_2-2",
-#     database="voting_system"
-# )
 
 cursor = db.cursor(dictionary=True)
 
@@ -743,21 +754,24 @@ def public_results():
 
     election = cursor.fetchone()
 
+    if not election:
+
+        return render_template(
+            'public_results.html',
+            no_election=True
+        )
+
     current_time = datetime.now()
 
     result_time = election['result_time']
-
-    # RESULTS NOT PUBLISHED
-
+    
     if current_time < result_time:
 
         remaining_time = result_time - current_time
 
         hours = remaining_time.seconds // 3600
 
-        minutes = (
-            remaining_time.seconds % 3600
-        ) // 60
+        minutes = (remaining_time.seconds % 3600) // 60
 
         return render_template(
             'public_results.html',
@@ -766,7 +780,6 @@ def public_results():
             hours=hours,
             minutes=minutes
         )
-
     # FETCH RESULTS
 
     cursor.execute(
