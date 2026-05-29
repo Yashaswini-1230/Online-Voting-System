@@ -11,13 +11,21 @@ app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.secret_key = "secretkey"
 
 # MYSQL CONNECTION
+import os
 
 db = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="Teja@sql_2-2",
-    database="voting_system"
+    host=os.getenv("MYSQLHOST"),
+    user=os.getenv("MYSQLUSER"),
+    password=os.getenv("MYSQLPASSWORD"),
+    database=os.getenv("MYSQLDATABASE"),
+    port=int(os.getenv("MYSQLPORT"))
 )
+# db = mysql.connector.connect(
+#     host="localhost",
+#     user="root",
+#     password="Teja@sql_2-2",
+#     database="voting_system"
+# )
 
 cursor = db.cursor(dictionary=True)
 
