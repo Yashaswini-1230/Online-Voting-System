@@ -200,6 +200,32 @@ The application is fully responsive and works across:
 * Duplicate Vote Prevention
 
 ---
+# 📸 Screenshots
+
+## 🏠 Home Page
+
+![Home Page](screenshots/home-page.png)
+
+## 📝 Registration Page
+
+![Registration Page](screenshots/register-page.png)
+
+## 🔐 Login Page
+
+![Login Page](screenshots/login-page.png)
+
+## 🗳 Voting Page
+
+![Voting Page](screenshots/vote-page.png)
+
+## 📊 Results Page
+
+![Results Page](screenshots/results-page.png)
+
+## ⚙️ Admin Dashboard
+
+![Admin Dashboard](screenshots/admin-dashboard.png)
+
 
 # 🤝 Contribution
 
