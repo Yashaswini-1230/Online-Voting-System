@@ -302,15 +302,25 @@ def vote():
     )
 
     election = cursor.fetchone()
-
     if not election:
 
-        flash(
-            "Election not configured",
-            "error"
+        return render_template(
+            'public_results.html',
+            election=None,
+            results_published=False,
+            hours=0,
+            minutes=0,
+            no_election=True
         )
 
-        return redirect('/')
+    # if not election:
+
+    #     flash(
+    #         "Election not configured",
+    #         "error"
+    #     )
+
+    #     return redirect('/')
 
     current_time = datetime.now()
 

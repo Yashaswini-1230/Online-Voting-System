@@ -3,7 +3,23 @@
 {% block content %}
 
 <div class="results-page">
+    {% if no_election %}
 
+<div class="winner-card">
+
+    <h1>
+        📢 No Election Configured
+    </h1>
+
+    <p style="margin-top:20px;">
+
+        The administrator has not configured any election yet.
+
+    </p>
+
+</div>
+
+{% else %}
     <!-- RESULTS NOT PUBLISHED -->
 
     {% if not results_published %}
@@ -179,6 +195,8 @@
     {% endif %}
 
 </div>
+
+{% endif %}
 
 {% endblock %}
 <script>
