@@ -3,82 +3,58 @@
 {% block content %}
 
 <div class="results-page">
+
     {% if no_election %}
-
-<div class="winner-card">
-
-    <h1>
-        📢 No Election Configured
-    </h1>
-
-    <p style="margin-top:20px;">
-
-        The administrator has not configured any election yet.
-
-    </p>
-
-</div>
-
-{% else %}
-    <!-- RESULTS NOT PUBLISHED -->
-
-    {% if not results_published %}
 
     <div class="winner-card">
 
-        <h1>
-            Results Not Published Yet
-        </h1>
+        <h1>📢 No Election Configured</h1>
 
         <p style="margin-top:20px;">
+            The administrator has not configured any election yet.
+        </p>
 
+    </div>
+
+    {% elif not results_published %}
+
+    <div class="winner-card">
+
+        <h1>🔒 Results Not Published Yet</h1>
+
+        <p style="margin-top:20px;">
             Results will be available after election completion.
-
         </p>
 
         <h2 style="margin-top:25px;">
-
             Time Remaining :
             {{ hours }}h {{ minutes }}m
-
         </h2>
 
     </div>
 
     {% else %}
 
-    <!-- HEADER -->
-
     <div class="results-header">
 
-        <h1>
-            🗳 Election Results
-        </h1>
+        <h1>🗳 Election Results</h1>
 
         <p>
             {{ election.election_name }}
         </p>
 
         <div class="total-votes">
-
             Total Votes :
-            <strong>
-                {{ total_votes }}
-            </strong>
-
+            <strong>{{ total_votes }}</strong>
         </div>
 
     </div>
 
-    <!-- NO PARTICIPATION -->
-
     {% if total_votes == 0 %}
 
-    <div class="empty-results">
+    <div class="winner-card">
 
-        <h2>
-            No Participation Yet
-        </h2>
+        <h2>📭 No Participation Yet</h2>
 
         <p>
             No one has voted in this election yet.
@@ -88,23 +64,21 @@
 
     {% endif %}
 
-    <!-- WINNER SECTION -->
-
     {% if winners %}
 
     <div class="winner-card">
 
         {% if winners|length == 1 %}
 
-            <div class="winner-badge">
-                🏆 Winner
-            </div>
+        <div class="winner-badge">
+            🏆 Winner
+        </div>
 
         {% else %}
 
-            <div class="winner-badge">
-                🤝 Tie Between Candidates
-            </div>
+        <div class="winner-badge">
+            🤝 Tie Between Candidates
+        </div>
 
         {% endif %}
 
@@ -114,18 +88,11 @@
 
             <div>
 
-                <h2>
-                    {{ winner.name }}
-                </h2>
+                <h2>{{ winner.name }}</h2>
 
-                <p>
-                    {{ winner.party }}
-                </p>
+                <p>{{ winner.party }}</p>
 
-                <h1>
-                    {{ winner.votes }}
-                    Votes
-                </h1>
+                <h1>{{ winner.votes }} Votes</h1>
 
             </div>
 
@@ -137,8 +104,6 @@
 
     {% endif %}
 
-    <!-- RESULTS GRID -->
-
     <div class="results-grid">
 
         {% for candidate in candidates %}
@@ -147,43 +112,33 @@
 
             <div class="candidate-header">
 
-                <h2>
-                    {{ candidate.name }}
-                </h2>
+                <h2>{{ candidate.name }}</h2>
 
                 <span class="vote-pill">
-
                     {{ candidate.votes }} Votes
-
                 </span>
 
             </div>
 
             <p class="party-name">
-
                 {{ candidate.party }}
-
             </p>
 
             <p class="candidate-slogan">
-
                 "{{ candidate.slogan }}"
-
             </p>
 
             <div class="progress-bar">
 
-                <div class="progress-fill"
-                     style="width: {{ candidate.percentage }}%">
-
+                <div
+                    class="progress-fill"
+                    style="width: {{ candidate.percentage }}%;">
                 </div>
 
             </div>
 
             <div class="percentage-text">
-
                 {{ candidate.percentage }}%
-
             </div>
 
         </div>
@@ -196,15 +151,12 @@
 
 </div>
 
-{% endif %}
-
 {% endblock %}
+
 <script>
 
-setTimeout(function(){
-
+setTimeout(function () {
     location.reload();
-
 }, 60000);
 
 </script>
