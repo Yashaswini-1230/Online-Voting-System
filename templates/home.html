@@ -4,222 +4,148 @@
 
 <div class="creative-home">
 
-    <!-- HERO SECTION -->
+```
+<section class="hero-container">
 
-    <section class="hero-container">
+    <div class="hero-left">
 
-        <div class="hero-left">
+        <span class="top-badge">
+            🗳 Secure Digital Election Platform
+        </span>
 
-            <span class="top-badge">
+        <h1>
+            Vote Smarter.<br>
+            Elect Better.
+        </h1>
 
-                🗳 Secure Digital Election Platform
+        <p>
+            A modern online voting platform built for
+            secure, transparent and efficient elections
+            with real-time management and result tracking.
+        </p>
 
-            </span>
+        <div class="hero-buttons">
 
-            <h1>
+            <a href="/register" class="main-btn">
+                Get Started
+            </a>
 
-                Vote Smarter.
-                <br>
-                Elect Better.
+            <a href="/public-results" class="outline-btn">
+                View Results
+            </a>
 
-            </h1>
+        </div>
 
-            <p>
+    </div>
 
-                A modern online voting platform built for
-                secure, transparent and efficient elections
-                with real-time management and result tracking.
+    <div class="hero-right">
 
-            </p>
+        <div class="glass-card">
 
-            <div class="hero-buttons">
+            <h3>Election Status</h3>
 
-                <a href="/register"
-                   class="main-btn">
+            <h2>{{ status_message }}</h2>
 
-                   Get Started
+            {% if countdown_time %}
 
-                </a>
-
-                <a href="/public-results"
-                   class="outline-btn">
-
-                   View Results
-
-                </a>
-
+            <div class="countdown-area">
+                <div id="countdown"></div>
             </div>
 
-        </div>
-
-        <!-- RIGHT SIDE -->
-
-        <div class="hero-right">
-
-            <div class="glass-card">
-
-                <h3>
-                    Election Status
-                </h3>
-
-                <h2>
-                    {{ status_message }}
-                </h2>
-
-                {% if countdown_time %}
-
-                <div class="countdown-area">
-
-                    <div id="countdown"></div>
-
-                </div>
-
-                {% endif %}
-
-            </div>
+            {% endif %}
 
         </div>
 
-    </section>
+    </div>
 
-    <!-- STATS -->
+</section>
 
-    <section class="stats-section">
+<section class="stats-section">
 
-        <div class="mini-card">
+    <div class="mini-card">
+        <h1>🔒</h1>
+        <h2>Secure</h2>
+        <p>Protected voting system</p>
+    </div>
 
-            <h1>
-                🔒
-            </h1>
+    <div class="mini-card">
+        <h1>⚡</h1>
+        <h2>Fast</h2>
+        <p>Real-time vote management</p>
+    </div>
 
-            <h2>
-                Secure
-            </h2>
+    <div class="mini-card">
+        <h1>📊</h1>
+        <h2>Transparent</h2>
+        <p>Fair election process</p>
+    </div>
 
-            <p>
-                Protected voting system
-            </p>
+    <div class="mini-card">
+        <h1>🌐</h1>
+        <h2>Responsive</h2>
+        <p>Mobile-friendly experience</p>
+    </div>
 
-        </div>
-
-        <div class="mini-card">
-
-            <h1>
-                ⚡
-            </h1>
-
-            <h2>
-                Fast
-            </h2>
-
-            <p>
-                Real-time vote management
-            </p>
-
-        </div>
-
-        <div class="mini-card">
-
-            <h1>
-                📊
-            </h1>
-
-            <h2>
-                Transparent
-            </h2>
-
-            <p>
-                Fair election process
-            </p>
-
-        </div>
-
-        <div class="mini-card">
-
-            <h1>
-                🌐
-            </h1>
-
-            <h2>
-                Responsive
-            </h2>
-
-            <p>
-                Mobile-friendly experience
-            </p>
-
-        </div>
-
-    </section>
+</section>
+```
 
 </div>
 
-<!-- COUNTDOWN -->
-
 <script>
 
-const targetDate =
-    new Date(
-        "{{ countdown_time }}"
-    ).getTime();
+const countdown = document.getElementById("countdown");
 
-const countdown =
-    document.getElementById(
-        "countdown"
-    );
+{% if countdown_time %}
 
-if(countdown){
+const targetDate = new Date("{{ countdown_time }}").getTime();
 
-    const timer =
-        setInterval(function(){
+if (countdown) {
 
-        const now =
-            new Date().getTime();
+    const timer = setInterval(function () {
 
-        const distance =
-            targetDate - now;
+        const now = new Date().getTime();
 
-        const days =
-            Math.floor(distance /
-            (1000 * 60 * 60 * 24));
+        const distance = targetDate - now;
 
-        const hours =
-            Math.floor(
-            (distance %
-            (1000 * 60 * 60 * 24)) /
-            (1000 * 60 * 60));
+        if (distance <= 0) {
 
-        const minutes =
-            Math.floor(
-            (distance %
-            (1000 * 60 * 60)) /
-            (1000 * 60));
+            clearInterval(timer);
 
-        const seconds =
-            Math.floor(
-            (distance %
-            (1000 * 60)) / 1000);
+            location.reload();
+
+            return;
+        }
+
+        const days = Math.floor(
+            distance / (1000 * 60 * 60 * 24)
+        );
+
+        const hours = Math.floor(
+            (distance % (1000 * 60 * 60 * 24))
+            / (1000 * 60 * 60)
+        );
+
+        const minutes = Math.floor(
+            (distance % (1000 * 60 * 60))
+            / (1000 * 60)
+        );
+
+        const seconds = Math.floor(
+            (distance % (1000 * 60))
+            / 1000
+        );
 
         countdown.innerHTML =
-
             days + "d " +
             hours + "h " +
             minutes + "m " +
-            seconds + "s ";
+            seconds + "s";
 
-        
-    if(distance < 0){
-
-    clearInterval(timer);
-
-    setTimeout(function () {
-        location.reload();
-    }, 2000);
+    }, 1000);
 
 }
-    
 
-}
+{% endif %}
 
 </script>
 
