@@ -1,10 +1,10 @@
-<!-- {% extends 'base.html' %}
+{% extends 'base.html' %}
 
 {% block content %}
 
 <div class="results-page">
 
-```
+
 {% if no_election %}
 
 <div class="winner-card">
@@ -40,13 +40,13 @@
 
     <h1>🗳 Election Results</h1>
 
-    <p>
-        {{ election.election_name }}
-    </p>
+    <p>{{ election.election_name }}</p>
 
     <div class="total-votes">
+
         Total Votes :
         <strong>{{ total_votes }}</strong>
+
     </div>
 
 </div>
@@ -149,160 +149,7 @@
 </div>
 
 {% endif %}
-```
 
-</div>
-
-<script>
-
-{% if not no_election %}
-
-setTimeout(function () {
-    location.reload();
-}, 60000);
-
-{% endif %}
-
-</script>
-
-{% endblock %} -->
-{% extends 'base.html' %}
-
-{% block content %}
-
-<div class="results-page">
-
-    {% if no_election %}
-
-    <div class="winner-card">
-        <h1>📢 No Election Configured</h1>
-
-        <p style="margin-top:20px;">
-            The administrator has not configured any election yet.
-        </p>
-    </div>
-
-    {% elif not results_published %}
-
-    <div class="winner-card">
-
-        <h1>🔒 Results Not Published Yet</h1>
-
-        <p style="margin-top:20px;">
-            Results will be available after election completion.
-        </p>
-
-        <h2 style="margin-top:25px;">
-            Time Remaining :
-            {{ hours }}h {{ minutes }}m
-        </h2>
-
-    </div>
-
-    {% else %}
-
-    <div class="results-header">
-
-        <h1>🗳 Election Results</h1>
-
-        <p>{{ election.election_name }}</p>
-
-        <div class="total-votes">
-            Total Votes :
-            <strong>{{ total_votes }}</strong>
-        </div>
-
-    </div>
-
-    {% if total_votes == 0 %}
-
-    <div class="winner-card">
-
-        <h2>📭 No Participation Yet</h2>
-
-        <p>
-            No one has voted in this election yet.
-        </p>
-
-    </div>
-
-    {% endif %}
-
-    {% if winners %}
-
-    <div class="winner-card">
-
-        {% if winners|length == 1 %}
-
-        <div class="winner-badge">
-            🏆 Winner
-        </div>
-
-        {% else %}
-
-        <div class="winner-badge">
-            🤝 Tie Between Candidates
-        </div>
-
-        {% endif %}
-
-        <div class="winner-grid">
-
-            {% for winner in winners %}
-
-            <div>
-                <h2>{{ winner.name }}</h2>
-                <p>{{ winner.party }}</p>
-                <h1>{{ winner.votes }} Votes</h1>
-            </div>
-
-            {% endfor %}
-
-        </div>
-
-    </div>
-
-    {% endif %}
-
-    <div class="results-grid">
-
-        {% for candidate in candidates %}
-
-        <div class="result-card">
-
-            <div class="candidate-header">
-                <h2>{{ candidate.name }}</h2>
-
-                <span class="vote-pill">
-                    {{ candidate.votes }} Votes
-                </span>
-            </div>
-
-            <p class="party-name">
-                {{ candidate.party }}
-            </p>
-
-            <p class="candidate-slogan">
-                "{{ candidate.slogan }}"
-            </p>
-
-            <div class="progress-bar">
-                <div class="progress-fill"
-                     style="width: {{ candidate.percentage }}%;">
-                </div>
-            </div>
-
-            <div class="percentage-text">
-                {{ candidate.percentage }}%
-            </div>
-
-        </div>
-
-        {% endfor %}
-
-    </div>
-
-    {% endif %}
 
 </div>
 
