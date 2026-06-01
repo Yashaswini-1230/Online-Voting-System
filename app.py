@@ -48,6 +48,71 @@ email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
 def valid_email(email):
     return re.match(email_pattern, email)
 
+def get_election_state():
+
+    cursor.execute(
+        "SELECT * FROM election_settings LIMIT 1"
+    )
+
+    election = cursor.fetchone()
+
+    if not election:
+
+        return {
+            "state": "no_election",
+            "election": None,
+            "message": "No Election Configured",
+            "countdown_time": ""
+        }
+
+    current_time = datetime.now()
+
+    start_time = election["start_time"]
+    end_time = election["end_time"]
+    result_time = election["result_time"]
+
+    if current_time < start_time:
+
+        return {
+            "state": "upcoming",
+            "election": election,
+            "message": "Election Starts In",
+            "countdown_time": start_time.strftime(
+                "%Y-%m-%d %H:%M:%S"
+            )
+        }
+
+    elif current_time < end_time:
+
+        return {
+            "state": "live",
+            "election": election,
+            "message": "Election Is Live",
+            "countdown_time": end_time.strftime(
+                "%Y-%m-%d %H:%M:%S"
+            )
+        }
+
+    elif current_time < result_time:
+
+        return {
+            "state": "closed",
+            "election": election,
+            "message": "Voting Closed",
+            "countdown_time": result_time.strftime(
+                "%Y-%m-%d %H:%M:%S"
+            )
+        }
+
+    else:
+
+        return {
+            "state": "results",
+            "election": election,
+            "message": "Results Published",
+            "countdown_time": ""
+        }
+
 
 # HOME PAGE
 
@@ -60,8 +125,6 @@ def home():
 
     election = cursor.fetchone()
 
-    # NO ELECTION CONFIGURED
-
     if not election:
 
         return render_template(
@@ -71,63 +134,41 @@ def home():
             countdown_time=""
         )
 
-    status_message = ""
-
-    countdown_time = ""
-
     current_time = datetime.now()
 
-    # INACTIVE ELECTION
+    start_time = election['start_time']
+    end_time = election['end_time']
+    result_time = election['result_time']
 
-    if election['status'] == 'inactive':
+    if current_time < start_time:
 
-        status_message = (
-            "No Active Election"
+        status_message = "Election Starts In"
+
+        countdown_time = start_time.strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
+
+    elif current_time < end_time:
+
+        status_message = "Election Is Live"
+
+        countdown_time = end_time.strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
+
+    elif current_time < result_time:
+
+        status_message = "Voting Closed"
+
+        countdown_time = result_time.strftime(
+            "%Y-%m-%d %H:%M:%S"
         )
 
     else:
 
-        start_time = election['start_time']
+        status_message = "Results Published"
 
-        end_time = election['end_time']
-
-        result_time = election['result_time']
-
-        if current_time < start_time:
-
-            status_message = (
-                "Election Has Not Started"
-            )
-
-            countdown_time = start_time.strftime(
-                "%Y-%m-%d %H:%M:%S"
-            )
-
-        elif current_time < end_time:
-
-            status_message = (
-                "Election Is Live"
-            )
-
-            countdown_time = end_time.strftime(
-                "%Y-%m-%d %H:%M:%S"
-            )
-
-        elif current_time < result_time:
-
-            status_message = (
-                "Voting Closed"
-            )
-
-            countdown_time = result_time.strftime(
-                "%Y-%m-%d %H:%M:%S"
-            )
-
-        else:
-
-            status_message = (
-                "Results Published"
-            )
+        countdown_time = ""
 
     return render_template(
         'home.html',
@@ -135,7 +176,6 @@ def home():
         status_message=status_message,
         countdown_time=countdown_time
     )
-
 
 # REGISTER
 
@@ -304,85 +344,83 @@ def login():
 @app.route('/vote', methods=['GET', 'POST'])
 def vote():
 
+    election_data = get_election_state()
+
+    election = election_data["election"]
+
+    cursor.execute(
+        "SELECT * FROM candidates"
+    )
+
+    candidates = cursor.fetchall()
+
+    if not election:
+
+        flash(
+            "Election not configured",
+            "error"
+        )
+
+        return render_template(
+            "vote.html",
+            candidates=candidates,
+            election=None
+        )
+
+    if election_data["state"] == "upcoming":
+
+        flash(
+            "Election has not started yet",
+            "error"
+        )
+
+        return render_template(
+            "vote.html",
+            candidates=candidates,
+            election=election
+        )
+
+    if election_data["state"] == "closed":
+
+        flash(
+            "Voting has ended",
+            "error"
+        )
+
+        return render_template(
+            "vote.html",
+            candidates=candidates,
+            election=election
+        )
+
+    if election_data["state"] == "results":
+
+        flash(
+            "Voting has ended",
+            "error"
+        )
+
+        return render_template(
+            "vote.html",
+            candidates=candidates,
+            election=election
+        )
+
     if 'user_email' not in session:
 
         return redirect('/login')
 
-    cursor.execute(
-        "SELECT * FROM election_settings LIMIT 1"
-    )
-
-    election = cursor.fetchone()
-    if not election:
-
-        return render_template(
-            'public_results.html',
-            election=None,
-            results_published=False,
-            hours=0,
-            minutes=0,
-            no_election=True
-        )
-
-    # if not election:
-
-    #     flash(
-    #         "Election not configured",
-    #         "error"
-    #     )
-
-    #     return redirect('/')
-
-    current_time = datetime.now()
-
-    start_time = election['start_time']
-
-    end_time = election['end_time']
-
-    # ELECTION NOT STARTED
-
-    if current_time < start_time:
-
-        flash(
-            f"Election has not started yet. Starts at {start_time}",
-            "error"
-        )
-
-        return render_template(
-            'vote.html',
-            candidates=[],
-            election=election
-        )
-
-    # ELECTION ENDED
-
-    if current_time > end_time:
-
-        flash(
-            "Voting has ended.",
-            "error"
-        )
-
-        return render_template(
-            'vote.html',
-            candidates=[],
-            election=election
-        )
-
-    # FETCH USER
-
     email = session['user_email']
 
-    query = """
-    SELECT * FROM users
-    WHERE email = %s
-    """
-
-    cursor.execute(query, (email,))
+    cursor.execute(
+        """
+        SELECT * FROM users
+        WHERE email=%s
+        """,
+        (email,)
+    )
 
     user = cursor.fetchone()
-
-    # ALREADY VOTED
 
     if user['voted'] == 1:
 
@@ -393,40 +431,27 @@ def vote():
 
         return redirect('/success')
 
-    # SUBMIT VOTE
-
     if request.method == 'POST':
 
-        candidate_id = request.form.get('candidate')
-
-        if not candidate_id:
-
-            flash(
-                "Please select a candidate",
-                "error"
-            )
-
-            return redirect('/vote')
-
-        update_query = """
-        UPDATE candidates
-        SET votes = votes + 1
-        WHERE id = %s
-        """
+        candidate_id = request.form.get(
+            'candidate'
+        )
 
         cursor.execute(
-            update_query,
+            """
+            UPDATE candidates
+            SET votes=votes+1
+            WHERE id=%s
+            """,
             (candidate_id,)
         )
 
-        voted_query = """
-        UPDATE users
-        SET voted = 1
-        WHERE email = %s
-        """
-
         cursor.execute(
-            voted_query,
+            """
+            UPDATE users
+            SET voted=1
+            WHERE email=%s
+            """,
             (email,)
         )
 
@@ -439,31 +464,17 @@ def vote():
 
         return redirect('/success')
 
-    # FETCH CANDIDATES
-
-    cursor.execute(
-        "SELECT * FROM candidates"
-    )
-
-    candidates = cursor.fetchall()
-
     return render_template(
         'vote.html',
         candidates=candidates,
         election=election
     )
-
-
-# SUCCESS PAGE
-
 @app.route('/success')
 def success():
 
     return render_template(
         'success.html'
     )
-
-
 # ADMIN LOGIN
 
 @app.route('/admin-login', methods=['GET', 'POST'])
@@ -778,11 +789,9 @@ def results():
 @app.route('/public-results')
 def public_results():
 
-    cursor.execute(
-        "SELECT * FROM election_settings LIMIT 1"
-    )
+    election_data = get_election_state()
 
-    election = cursor.fetchone()
+    election = election_data["election"]
 
     if not election:
 
@@ -791,81 +800,83 @@ def public_results():
             no_election=True
         )
 
-    current_time = datetime.now()
+    if election_data["state"] != "results":
 
-    result_time = election['result_time']
-    
-    if current_time < result_time:
+        current_time = datetime.now()
 
-        remaining_time = result_time - current_time
+        remaining_time = (
+            election["result_time"]
+            - current_time
+        )
 
-        hours = remaining_time.seconds // 3600
+        hours = max(
+            0,
+            remaining_time.seconds // 3600
+        )
 
-        minutes = (remaining_time.seconds % 3600) // 60
+        minutes = max(
+            0,
+            (remaining_time.seconds % 3600) // 60
+        )
 
         return render_template(
             'public_results.html',
             election=election,
             results_published=False,
             hours=hours,
-            minutes=minutes
+            minutes=minutes,
+            no_election=False
         )
-    # FETCH RESULTS
 
     cursor.execute(
-        "SELECT * FROM candidates ORDER BY votes DESC"
+        """
+        SELECT * FROM candidates
+        ORDER BY votes DESC
+        """
     )
 
     candidates = cursor.fetchall()
 
     total_votes = sum(
-        candidate['votes']
-        for candidate in candidates
+        c["votes"]
+        for c in candidates
     )
-
-    # CALCULATE PERCENTAGES
 
     for candidate in candidates:
 
         if total_votes > 0:
 
-            percentage = (
-                candidate['votes']
-                / total_votes
-            ) * 100
-
-            candidate['percentage'] = round(
-                percentage,
+            candidate["percentage"] = round(
+                candidate["votes"]
+                * 100
+                / total_votes,
                 1
             )
 
         else:
 
-            candidate['percentage'] = 0
+            candidate["percentage"] = 0
 
     winners = []
 
-    highest_votes = 0
-
     if candidates:
 
-        highest_votes = max(
-            candidate['votes']
-            for candidate in candidates
+        max_votes = max(
+            c["votes"]
+            for c in candidates
         )
 
-    # HANDLE TIE
+        if max_votes > 0:
 
-    if highest_votes > 0:
+            winners = [
 
-        winners = [
+                c
 
-            candidate
+                for c in candidates
 
-            for candidate in candidates
+                if c["votes"] == max_votes
 
-            if candidate['votes'] == highest_votes
-        ]
+            ]
 
     return render_template(
         'public_results.html',
@@ -873,10 +884,9 @@ def public_results():
         candidates=candidates,
         total_votes=total_votes,
         winners=winners,
-        highest_votes=highest_votes,
-        results_published=True
+        results_published=True,
+        no_election=False
     )
-
 
 # LOGOUT
 
