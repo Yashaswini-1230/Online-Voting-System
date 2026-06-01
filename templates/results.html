@@ -4,24 +4,39 @@
 
 <div class="container">
 
-    <h2>Admin Results</h2>
+```
+<h2>Admin Results</h2>
+
+{% if candidates %}
 
     {% for candidate in candidates %}
 
-        <div class="candidate-card">
+    <div class="candidate-card">
 
-            <h3>
-                {{ candidate.name }}
-            </h3>
+        <h3>{{ candidate.name }}</h3>
 
-            <p>
-                Votes :
-                {{ candidate.votes }}
-            </p>
+        <p>
+            Party : {{ candidate.party }}
+        </p>
 
-        </div>
+        <p>
+            Votes : {{ candidate.votes }}
+        </p>
+
+    </div>
 
     {% endfor %}
+
+{% else %}
+
+    <div class="empty-results">
+
+        <h3>No Candidates Available</h3>
+
+    </div>
+
+{% endif %}
+```
 
 </div>
 
