@@ -12,31 +12,31 @@ app.secret_key = "secretkey"
 
 # MYSQL CONNECTION
 import os
-# if os.getenv("MYSQLHOST"):
+if os.getenv("MYSQLHOST"):
 
-#     db = mysql.connector.connect(
-#         host=os.getenv("MYSQLHOST"),
-#         user=os.getenv("MYSQLUSER"),
-#         password=os.getenv("MYSQLPASSWORD"),
-#         database=os.getenv("MYSQLDATABASE"),
-#         port=int(os.getenv("MYSQLPORT"))
-#     )
+    db = mysql.connector.connect(
+        host=os.getenv("MYSQLHOST"),
+        user=os.getenv("MYSQLUSER"),
+        password=os.getenv("MYSQLPASSWORD"),
+        database=os.getenv("MYSQLDATABASE"),
+        port=int(os.getenv("MYSQLPORT"))
+    )
 
-# else:
+else:
 
-#     db = mysql.connector.connect(
-#         host="localhost",
-#         user="root",
-#         password="YOUR_LOCAL_MYSQL_PASSWORD",
-#         database="voting_system"
-#     )
-db = mysql.connector.connect(
-    host=os.getenv("MYSQLHOST"),
-    user=os.getenv("MYSQLUSER"),
-    password=os.getenv("MYSQLPASSWORD"),
-    database=os.getenv("MYSQLDATABASE"),
-    port=int(os.getenv("MYSQLPORT"))
-)
+    db = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="Teja@sql_2-2",
+        database="voting_system"
+    )
+# db = mysql.connector.connect(
+#     host=os.getenv("MYSQLHOST"),
+#     user=os.getenv("MYSQLUSER"),
+#     password=os.getenv("MYSQLPASSWORD"),
+#     database=os.getenv("MYSQLDATABASE"),
+#     port=int(os.getenv("MYSQLPORT"))
+# )
 
 cursor = db.cursor(dictionary=True)
 

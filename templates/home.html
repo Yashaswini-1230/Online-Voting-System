@@ -207,15 +207,17 @@ if(countdown){
             minutes + "m " +
             seconds + "s ";
 
-        if(distance < 0){
+        
+    if(distance < 0){
 
     clearInterval(timer);
 
-    countdown.innerHTML =
-        "Election status updated. Please refresh.";
+    setTimeout(function () {
+        location.reload();
+    }, 2000);
 
 }
-    }, 1000);
+    
 
 }
 
