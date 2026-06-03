@@ -12,24 +12,22 @@ app.secret_key = "secretkey"
 
 # MYSQL CONNECTION
 import os
-if os.getenv("MYSQLHOST"):
+ADMIN_EMAIL = os.getenv(
+    "ADMIN_EMAIL",
+    "admin@gmail.com"
+)
 
-    db = mysql.connector.connect(
-        host=os.getenv("MYSQLHOST"),
-        user=os.getenv("MYSQLUSER"),
-        password=os.getenv("MYSQLPASSWORD"),
-        database=os.getenv("MYSQLDATABASE"),
-        port=int(os.getenv("MYSQLPORT"))
-    )
-
-else:
-
-    db = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="Teja@sql_2-2",
-        database="voting_system"
-    )
+ADMIN_PASSWORD = os.getenv(
+    "ADMIN_PASSWORD",
+    "admin123"
+)
+db = mysql.connector.connect(
+    host=os.getenv("MYSQLHOST", "localhost"),
+    user=os.getenv("MYSQLUSER", "root"),
+    password=os.getenv("MYSQLPASSWORD"),
+    database=os.getenv("MYSQLDATABASE", "voting_system"),
+    port=int(os.getenv("MYSQLPORT", 3306))
+)
 # db = mysql.connector.connect(
 #     host=os.getenv("MYSQLHOST"),
 #     user=os.getenv("MYSQLUSER"),
@@ -482,8 +480,8 @@ def admin_login():
         password = request.form['password']
 
         if (
-            email == 'admin@gmail.com'
-            and password == 'admin123'
+            email == ADMIN_EMAIL
+            and password == ADMIN_PASSWORD
         ):
 
             session['admin'] = True
