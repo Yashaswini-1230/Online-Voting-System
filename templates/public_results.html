@@ -178,10 +178,11 @@ const timer =
 
             clearInterval(timer);
 
-            location.reload();
+            countdown.innerHTML =
+                "Results ready. Please refresh the page.";
 
-            return;
-        }
+     return;
+}
 
         const hours =
             Math.floor(
