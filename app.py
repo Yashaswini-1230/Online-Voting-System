@@ -3,7 +3,9 @@ import mysql.connector
 import re
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
-
+from dotenv import load_dotenv
+load_dotenv()
+import os
 app = Flask(__name__)
 
 app.config['TEMPLATES_AUTO_RELOAD'] = True
@@ -11,7 +13,6 @@ app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.secret_key = "secretkey"
 
 # MYSQL CONNECTION
-import os
 ADMIN_EMAIL = os.getenv(
     "ADMIN_EMAIL",
     "admin@gmail.com"
@@ -24,7 +25,7 @@ ADMIN_PASSWORD = os.getenv(
 db = mysql.connector.connect(
     host=os.getenv("MYSQLHOST", "localhost"),
     user=os.getenv("MYSQLUSER", "root"),
-    password=os.getenv("MYSQLPASSWORD"),
+    password=os.getenv("MYSQLPASSWORD", "YOUR_MYSQL_PASSWORD"),
     database=os.getenv("MYSQLDATABASE", "voting_system"),
     port=int(os.getenv("MYSQLPORT", 3306))
 )
