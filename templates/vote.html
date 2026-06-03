@@ -4,41 +4,90 @@
 
 <div class="vote-page">
 
-    <!-- HEADER -->
+```
+<div class="vote-header">
 
-    <div class="vote-header">
+    <h1>Cast Your Vote</h1>
 
-        <h1>
-            Cast Your Vote
-        </h1>
+    {% if election %}
+    <p>{{ election.election_name }}</p>
+    {% endif %}
 
-        <p>
+</div>
 
-            {{ election.election_name }}
+{% if no_election %}
 
-        </p>
+<div class="empty-results">
+
+    <h2>No Election Configured</h2>
+
+    <p>
+        The administrator has not created an election yet.
+    </p>
+
+</div>
+
+{% else %}
+
+<div class="winner-card">
+
+    <h2>{{ election_status }}</h2>
+
+</div>
+
+{% if not candidates %}
+
+<div class="empty-results">
+
+    <h2>No Candidates Available</h2>
+
+    <p>
+        Candidates will be announced soon.
+    </p>
+
+</div>
+
+{% else %}
+
+<div class="vote-grid">
+
+    {% for candidate in candidates %}
+
+    <div class="vote-card">
+
+        <div class="vote-card-content">
+
+            <div class="candidate-avatar">
+
+                {{ candidate.name[0] }}
+
+            </div>
+
+            <h2>{{ candidate.name }}</h2>
+
+            <p class="party-name">
+
+                {{ candidate.party }}
+
+            </p>
+
+            <p class="candidate-slogan">
+
+                "{{ candidate.slogan }}"
+
+            </p>
+
+        </div>
 
     </div>
 
-    <!-- NO CANDIDATES -->
+    {% endfor %}
 
-    {% if not candidates %}
+</div>
 
-    <div class="empty-results">
+{% if election_live %}
 
-        <h2>
-            No Candidates Available
-        </h2>
-
-        <p>
-            Candidates will be announced soon.
-        </p>
-
-    </div>
-
-    {% else %}
-
-    <!-- VOTING FORM -->
+    {% if session.user_id %}
 
     <form method="POST"
           class="vote-form">
@@ -62,9 +111,7 @@
 
                     </div>
 
-                    <h2>
-                        {{ candidate.name }}
-                    </h2>
+                    <h2>{{ candidate.name }}</h2>
 
                     <p class="party-name">
 
@@ -88,8 +135,9 @@
 
         <div class="submit-section">
 
-            <button type="submit"
-                    class="vote-submit-btn">
+            <button
+                type="submit"
+                class="vote-submit-btn">
 
                 Submit Vote
 
@@ -99,7 +147,40 @@
 
     </form>
 
+    {% else %}
+
+    <div class="submit-section">
+
+        <a href="/login"
+           class="vote-submit-btn">
+
+           Login To Vote
+
+        </a>
+
+    </div>
+
     {% endif %}
+
+{% elif results_published %}
+
+<div class="submit-section">
+
+    <a href="/public-results"
+       class="vote-submit-btn">
+
+       View Results
+
+    </a>
+
+</div>
+
+{% endif %}
+
+{% endif %}
+
+{% endif %}
+```
 
 </div>
 

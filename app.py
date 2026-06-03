@@ -356,82 +356,79 @@ def vote():
 
     if not election:
 
-        flash(
-            "Election not configured",
-            "error"
-        )
-
         return render_template(
-            "vote.html",
+            'vote.html',
+            no_election=True,
+            election=None,
             candidates=candidates,
-            election=None
+            election_status="No Election Configured",
+            election_live=False,
+            results_published=False
         )
 
-    if election_data["state"] == "upcoming":
+    state = election_data["state"]
 
-        flash(
-            "Election has not started yet",
-            "error"
-        )
+    election_status = ""
 
-        return render_template(
-            "vote.html",
-            candidates=candidates,
-            election=election
-        )
+    election_live = False
 
-    if election_data["state"] == "closed":
+    results_published = False
 
-        flash(
-            "Voting has ended",
-            "error"
-        )
+    if state == "upcoming":
 
-        return render_template(
-            "vote.html",
-            candidates=candidates,
-            election=election
-        )
+        election_status = "Election Has Not Started Yet"
 
-    if election_data["state"] == "results":
+    elif state == "live":
 
-        flash(
-            "Voting has ended",
-            "error"
-        )
+        election_status = "Election Is Live"
 
-        return render_template(
-            "vote.html",
-            candidates=candidates,
-            election=election
-        )
+        election_live = True
 
-    if 'user_email' not in session:
+    elif state == "closed":
 
-        return redirect('/login')
+        election_status = "Voting Closed"
 
-    email = session['user_email']
+    elif state == "results":
 
-    cursor.execute(
-        """
-        SELECT * FROM users
-        WHERE email=%s
-        """,
-        (email,)
-    )
+        election_status = "Results Published"
 
-    user = cursor.fetchone()
-
-    if user['voted'] == 1:
-
-        flash(
-            "You have already voted",
-            "error"
-        )
-
-        return redirect('/success')
+        results_published = True
 
     if request.method == 'POST':
+
+        if not election_live:
+
+            flash(
+                "Voting is not currently active",
+                "error"
+            )
+
+            return redirect('/vote')
+
+        if 'user_email' not in session:
+
+            return redirect('/login')
+
+        email = session['user_email']
+
+        cursor.execute(
+            """
+            SELECT * FROM users
+            WHERE email = %s
+            """,
+            (email,)
+        )
+
+        user = cursor.fetchone()
+
+        if user and user['voted'] == 1:
+
+            flash(
+                "You have already voted",
+                "error"
+            )
+
+            return redirect('/success')
 
         candidate_id = request.form.get(
             'candidate'
@@ -440,8 +437,8 @@ def vote():
         cursor.execute(
             """
             UPDATE candidates
-            SET votes=votes+1
-            WHERE id=%s
+            SET votes = votes + 1
+            WHERE id = %s
             """,
             (candidate_id,)
         )
@@ -449,8 +446,8 @@ def vote():
         cursor.execute(
             """
             UPDATE users
-            SET voted=1
-            WHERE email=%s
+            SET voted = 1
+            WHERE email = %s
             """,
             (email,)
         )
@@ -466,16 +463,14 @@ def vote():
 
     return render_template(
         'vote.html',
+        no_election=False,
+        election=election,
         candidates=candidates,
-        election=election
+        election_status=election_status,
+        election_live=election_live,
+        results_published=results_published
     )
-@app.route('/success')
-def success():
 
-    return render_template(
-        'success.html'
-    )
-# ADMIN LOGIN
 
 @app.route('/admin-login', methods=['GET', 'POST'])
 def admin_login():
@@ -839,13 +834,14 @@ def public_results():
         )
 
         return render_template(
-            'public_results.html',
-            election=election,
-            results_published=False,
-            hours=hours,
-            minutes=minutes,
-            no_election=False
-        )
+    'public_results.html',
+    election=election,
+    results_published=False,
+    result_time=election["result_time"].strftime(
+        "%Y-%m-%d %H:%M:%S"
+    ),
+    no_election=False
+)
 
     cursor.execute(
         """

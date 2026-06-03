@@ -4,16 +4,15 @@
 
 <div class="results-page">
 
-
 {% if no_election %}
 
 <div class="winner-card">
 
-    <h1>📢 No Election Configured</h1>
+<h1>📢 No Election Configured</h1>
 
-    <p style="margin-top:20px;">
-        The administrator has not configured any election yet.
-    </p>
+<p style="margin-top:20px;">
+    The administrator has not configured any election yet.
+</p>
 
 </div>
 
@@ -21,16 +20,16 @@
 
 <div class="winner-card">
 
-    <h1>🔒 Results Not Published Yet</h1>
+<h1>🔒 Results Not Published Yet</h1>
 
-    <p style="margin-top:20px;">
-        Results will be available after election completion.
-    </p>
+<p style="margin-top:20px;">
+    Results will be available after election completion.
+</p>
 
-    <h2 style="margin-top:25px;">
-        Time Remaining :
-        {{ hours }}h {{ minutes }}m
-    </h2>
+<h2
+    id="result-countdown"
+    style="margin-top:25px;">
+</h2>
 
 </div>
 
@@ -38,16 +37,16 @@
 
 <div class="results-header">
 
-    <h1>🗳 Election Results</h1>
+<h1>🗳 Election Results</h1>
 
-    <p>{{ election.election_name }}</p>
+<p>{{ election.election_name }}</p>
 
-    <div class="total-votes">
+<div class="total-votes">
 
-        Total Votes :
-        <strong>{{ total_votes }}</strong>
+    Total Votes :
+    <strong>{{ total_votes }}</strong>
 
-    </div>
+</div>
 
 </div>
 
@@ -55,11 +54,11 @@
 
 <div class="winner-card">
 
-    <h2>📭 No Participation Yet</h2>
+<h2>📭 No Participation Yet</h2>
 
-    <p>
-        No one has voted in this election yet.
-    </p>
+<p>
+    No one has voted in this election yet.
+</p>
 
 </div>
 
@@ -69,78 +68,31 @@
 
 <div class="winner-card">
 
-    {% if winners|length == 1 %}
+{% if winners|length == 1 %}
 
-    <div class="winner-badge">
-        🏆 Winner
-    </div>
+<div class="winner-badge">
+    🏆 Winner
+</div>
 
-    {% else %}
+{% else %}
 
-    <div class="winner-badge">
-        🤝 Tie Between Candidates
-    </div>
-
-    {% endif %}
-
-    <div class="winner-grid">
-
-        {% for winner in winners %}
-
-        <div>
-
-            <h2>{{ winner.name }}</h2>
-
-            <p>{{ winner.party }}</p>
-
-            <h1>{{ winner.votes }} Votes</h1>
-
-        </div>
-
-        {% endfor %}
-
-    </div>
-
+<div class="winner-badge">
+    🤝 Tie Between Candidates
 </div>
 
 {% endif %}
 
-<div class="results-grid">
+<div class="winner-grid">
 
-    {% for candidate in candidates %}
+    {% for winner in winners %}
 
-    <div class="result-card">
+    <div>
 
-        <div class="candidate-header">
+        <h2>{{ winner.name }}</h2>
 
-            <h2>{{ candidate.name }}</h2>
+        <p>{{ winner.party }}</p>
 
-            <span class="vote-pill">
-                {{ candidate.votes }} Votes
-            </span>
-
-        </div>
-
-        <p class="party-name">
-            {{ candidate.party }}
-        </p>
-
-        <p class="candidate-slogan">
-            "{{ candidate.slogan }}"
-        </p>
-
-        <div class="progress-bar">
-
-            <div
-                class="progress-fill"
-                style="width: {{ candidate.percentage }}%;">
-            </div>
-
-        </div>
-
-        <div class="percentage-text">
-            {{ candidate.percentage }}%
-        </div>
+        <h1>{{ winner.votes }} Votes</h1>
 
     </div>
 
@@ -148,20 +100,124 @@
 
 </div>
 
+</div>
+
 {% endif %}
 
+<div class="results-grid">
+
+{% for candidate in candidates %}
+
+<div class="result-card">
+
+    <div class="candidate-header">
+
+        <h2>{{ candidate.name }}</h2>
+
+        <span class="vote-pill">
+            {{ candidate.votes }} Votes
+        </span>
+
+    </div>
+
+    <p class="party-name">
+        {{ candidate.party }}
+    </p>
+
+    <p class="candidate-slogan">
+        "{{ candidate.slogan }}"
+    </p>
+
+    <div class="progress-bar">
+
+        <div
+            class="progress-fill"
+            data-percentage="{{ candidate.percentage|default(0) }}">
+        </div>
+
+    </div>
+
+    <div class="percentage-text">
+        {{ candidate.percentage }}%
+    </div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% endif %}
 
 </div>
 
 <script>
 
-{% if not no_election %}
+{% if not no_election and not results_published %}
 
-setTimeout(function () {
-    location.reload();
-}, 60000);
+const resultTime =
+    new Date(
+        "{{ result_time }}"
+    ).getTime();
+
+const countdown =
+    document.getElementById(
+        "result-countdown"
+    );
+
+const timer =
+    setInterval(function(){
+
+        const now =
+            new Date().getTime();
+
+        const distance =
+            resultTime - now;
+
+        if(distance <= 0){
+
+            clearInterval(timer);
+
+            location.reload();
+
+            return;
+        }
+
+        const hours =
+            Math.floor(
+                distance /
+                (1000 * 60 * 60)
+            );
+
+        const minutes =
+            Math.floor(
+                (distance %
+                (1000 * 60 * 60))
+                /
+                (1000 * 60)
+            );
+
+        const seconds =
+            Math.floor(
+                (distance %
+                (1000 * 60))
+                / 1000
+            );
+
+        countdown.innerHTML =
+            "Time Remaining : "
+            + hours + "h "
+            + minutes + "m "
+            + seconds + "s";
+
+    },1000);
 
 {% endif %}
+
+document.querySelectorAll(".progress-fill").forEach(function(fill){
+    const percentage = Number(fill.dataset.percentage) || 0;
+    fill.style.width = percentage + "%";
+});
 
 </script>
 
