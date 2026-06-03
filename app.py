@@ -550,15 +550,13 @@ def add_candidate():
 
     slogan = request.form['slogan'].strip()
 
-    # DUPLICATE CHECK
-
-    check_query = """
-    SELECT * FROM candidates
-    WHERE LOWER(name) = %s
-    """
+    # CHECK DUPLICATE CANDIDATE NAME
 
     cursor.execute(
-        check_query,
+        """
+        SELECT * FROM candidates
+        WHERE LOWER(name) = %s
+        """,
         (name.lower(),)
     )
 
@@ -573,22 +571,45 @@ def add_candidate():
 
         return redirect('/admin-dashboard')
 
-    query = """
-    INSERT INTO candidates(
-        name,
-        party,
-        slogan
-    )
-    VALUES(%s, %s, %s)
-    """
+    # CHECK DUPLICATE PARTY
 
-    values = (
-        name,
-        party,
-        slogan
+    cursor.execute(
+        """
+        SELECT * FROM candidates
+        WHERE LOWER(party) = %s
+        """,
+        (party.lower(),)
     )
 
-    cursor.execute(query, values)
+    existing_party = cursor.fetchone()
+
+    if existing_party:
+
+        flash(
+            "A candidate already exists for this party",
+            "error"
+        )
+
+        return redirect('/admin-dashboard')
+
+    # ADD NEW CANDIDATE
+
+    cursor.execute(
+        """
+        INSERT INTO candidates
+        (
+            name,
+            party,
+            slogan
+        )
+        VALUES (%s, %s, %s)
+        """,
+        (
+            name,
+            party,
+            slogan
+        )
+    )
 
     db.commit()
 
@@ -598,8 +619,6 @@ def add_candidate():
     )
 
     return redirect('/admin-dashboard')
-
-
 # UPDATE ELECTION
 
 @app.route('/update-election', methods=['POST'])
